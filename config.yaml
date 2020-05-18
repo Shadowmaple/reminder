@@ -1,0 +1,7 @@
+db:
+  addr: localhost
+  user: root
+  password: root
+mail:
+  user:
+  auth_code:
