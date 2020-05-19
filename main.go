@@ -55,11 +55,11 @@ func main() {
 
 	c := cron.New(cron.WithSeconds())
 
-	c.AddFunc("*/5 * * * * *", Email)
-	// c.AddFunc("0 0 8 * * mon", func() {
-	// 	fmt.Println("Email is called...")
-	// 	Email()
-	// })
+	// c.AddFunc("*/5 * * * * *", Email)
+	c.AddFunc("0 0 8 * * mon", func() {
+		fmt.Println("Email is called...")
+		Email()
+	})
 	// c.AddFunc("*/3 * * * * *", func() { fmt.Println("hello") })
 
 	c.Start()
