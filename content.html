@@ -3,8 +3,10 @@
       <th>组别</th>
       <th>数量</th>
     </tr>
+    {{ range . }}
     <tr>
-      <td>January</td>
-      <td>$100</td>
+      <td>{{ .key }}</td>
+      <td>{{ .value }}</td>
     </tr>
+    {{ end }}
 </table>

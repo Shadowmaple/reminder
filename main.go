@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/robfig/cron"
+	"github.com/robfig/cron/v3"
 	"github.com/spf13/viper"
 )
 
@@ -30,7 +30,6 @@ type Item struct {
 
 /*
 环境变量
-
 export REMINDER_DB_ADDR=
 export REMINDER_DB_USERNAME=
 export REMINDER_DB_PASSWORD=
@@ -54,23 +53,27 @@ func main() {
 	// Email()
 	// return
 
-	c := cron.New()
+	c := cron.New(cron.WithSeconds())
 
-	c.AddFunc("*/10 * * * * *", Email)
-	// c.AddFunc("*/10 * * * * *", func() { Email() })
-	// c.AddFunc("*/5 * * * * *", func() { fmt.Println("hello") })
+	c.AddFunc("*/5 * * * * *", Email)
+	// c.AddFunc("0 0 8 * * mon", func() {
+	// 	fmt.Println("Email is called...")
+	// 	Email()
+	// })
+	// c.AddFunc("*/3 * * * * *", func() { fmt.Println("hello") })
 
 	c.Start()
 	defer c.Stop()
 
-	for {
-	}
+	// fmt.Println(c.Entries())
+
+	select {}
 }
 
 func Email() {
-	// var to = []string{"1027319981@qq.com", "shdwzhang@163.com"}
+	var to = []string{"1027319981@qq.com", "shdwzhang@163.com"}
 	// var to = []string{"shdwzhang@163.com"}
-	var to = []string{"654957943@qq.com"}
+	// var to = []string{"654957943@qq.com"}
 	var body string
 	var subject = "工作台进度每周汇总"
 
@@ -80,9 +83,29 @@ func Email() {
 		return
 	}
 
+	groups := map[string]uint32{"产品": 0, "前端": 0, "后端": 0, "安卓": 0, "设计": 0}
+	// groups := map[uint8]uint32{1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
+
 	for _, item := range items {
-		body += fmt.Sprintf("%s： %d\n", groupMap[item.GroupId], item.Total)
+		groups[groupMap[item.GroupId]] = item.Total
 	}
+
+	for key, value := range groups {
+		body += fmt.Sprintf("%s： %d\n", key, value)
+	}
+
+	// body = `<table>
+	// <tr>
+	//   <th>组别</th>
+	//   <th>数量</th>
+	// </tr>`
+
+	// for _, item := range items {
+	// 	body += fmt.Sprintf("%s： %d\n", groupMap[item.GroupId], item.Total)
+	// 	// body += fmt.Sprintf("<tr><td>%s</td><td>%d</td></tr>%d", groupMap[item.GroupId], item.Total)
+	// }
+
+	// body += `</table>`
 
 	fmt.Println(body)
 
@@ -114,7 +137,7 @@ func Query() ([]Item, error) {
 	if err := query.Scan(&items).Error; err != nil {
 		return nil, err
 	}
-	fmt.Println(items)
+	// fmt.Println(items)
 
 	return items, nil
 }
